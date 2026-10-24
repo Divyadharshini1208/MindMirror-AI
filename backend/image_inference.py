@@ -11,10 +11,14 @@ from typing import Dict, Any, List, Union
 
 import joblib
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 
 MODEL_2_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Model-2"))
-MODEL_PATH = os.path.join(MODEL_2_DIR, "models", "best_model.joblib")
+POSSIBLE_PATHS = [
+    os.path.join(MODEL_2_DIR, "models", "best_model.joblib"),
+    os.path.abspath(os.path.join(os.getcwd(), "Model-2", "models", "best_model.joblib")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "Model-2", "models", "best_model.joblib")),
+]
 
 _model_artifact = None
 _pipeline = None
@@ -29,17 +33,23 @@ def load_image_model() -> bool:
     if _pipeline is not None:
         return True
 
-    if not os.path.exists(MODEL_PATH):
-        print(f"[ImageInference] Model file not found at: {MODEL_PATH}")
+    resolved_path = None
+    for p in POSSIBLE_PATHS:
+        if os.path.exists(p):
+            resolved_path = p
+            break
+
+    if not resolved_path:
+        print(f"[ImageInference] Model file not found in search paths: {POSSIBLE_PATHS}")
         return False
 
     try:
-        _model_artifact = joblib.load(MODEL_PATH)
+        _model_artifact = joblib.load(resolved_path)
         _pipeline = _model_artifact["model"]
         _classes = _model_artifact["classes"]
         _id_to_label = _model_artifact["id_to_label"]
         _image_size = _model_artifact.get("image_size", (48, 48))
-        print(f"[ImageInference] Successfully loaded NURA Image Model from {MODEL_PATH}")
+        print(f"[ImageInference] Successfully loaded NURA Image Model from {resolved_path}")
         print(f"[ImageInference] Best Model: {_model_artifact.get('model_name', 'Linear Support Vector Machine')}")
         print(f"[ImageInference] Emotion Classes: {_classes}")
         return True
@@ -51,6 +61,7 @@ def load_image_model() -> bool:
 def preprocess_image_bytes(image_data: Union[bytes, io.BytesIO, Image.Image]) -> np.ndarray:
     """
     Transform input image data into 48x48 single-channel grayscale normalized float array.
+    Preserves facial geometry with aspect-ratio-safe center cropping and auto-rotates mobile uploads.
     """
     if isinstance(image_data, Image.Image):
         pil_img = image_data
@@ -58,6 +69,24 @@ def preprocess_image_bytes(image_data: Union[bytes, io.BytesIO, Image.Image]) ->
         pil_img = Image.open(io.BytesIO(image_data))
     else:
         pil_img = Image.open(image_data)
+
+    # Auto-orient smartphone photos with EXIF metadata
+    try:
+        pil_img = ImageOps.exif_transpose(pil_img)
+    except Exception:
+        pass
+
+    # Validate image format if present
+    if hasattr(pil_img, "format") and pil_img.format and pil_img.format.upper() not in ["JPEG", "PNG", "WEBP", "MPO", "JPG"]:
+        raise ValueError(f"Unsupported image format: {pil_img.format}. Please upload a JPG, PNG, or WebP photo.")
+
+    # Crop to center square if rectangular to avoid distorting facial features
+    w, h = pil_img.size
+    if w != h:
+        min_dim = min(w, h)
+        left = (w - min_dim) // 2
+        top = (h - min_dim) // 2
+        pil_img = pil_img.crop((left, top, left + min_dim, top + min_dim))
 
     # Convert to grayscale ('L')
     if pil_img.mode != "L":
@@ -67,7 +96,7 @@ def preprocess_image_bytes(image_data: Union[bytes, io.BytesIO, Image.Image]) ->
     if pil_img.size != _image_size:
         pil_img = pil_img.resize(_image_size, Image.Resampling.BILINEAR)
 
-    # Flatten and normalize to [0, 1] range
+    # Flatten and normalize to [0, 1] range (2304 features)
     arr = np.array(pil_img, dtype=np.float32).flatten() / 255.0
     return arr
 
@@ -89,6 +118,8 @@ def predict_image_emotion(image_data: Union[bytes, io.BytesIO, Image.Image]) -> 
 
     try:
         img_arr = preprocess_image_bytes(image_data)
+    except ValueError as ve:
+        raise ve
     except Exception as e:
         raise ValueError(f"Could not decode image file: {e}")
 
@@ -103,8 +134,11 @@ def predict_image_emotion(image_data: Union[bytes, io.BytesIO, Image.Image]) -> 
     # Calibrate probability distribution from model decision function
     if hasattr(_pipeline, "decision_function"):
         dec = _pipeline.decision_function([img_arr])[0]
-        # Softmax over decision scores for continuous probability estimation
-        exp_dec = np.exp(dec - np.max(dec))
+        # Temperature-scaled softmax over SVM decision margins for continuous probability estimation
+        std_val = float(np.std(dec))
+        temp = max(std_val / 3.0, 1.0)
+        scaled = (dec - np.max(dec)) / temp
+        exp_dec = np.exp(np.clip(scaled, -15, 0))
         probas = exp_dec / np.sum(exp_dec)
         top_prob = float(probas[pred_class_idx])
         top_confidence = int(round(top_prob * 100))
@@ -123,8 +157,8 @@ def predict_image_emotion(image_data: Union[bytes, io.BytesIO, Image.Image]) -> 
                 "score": int(round(float(probas[idx]) * 100)),
             })
     else:
-        top_confidence = 90
-        distribution.append({"emotion": predicted_emotion, "score": 90})
+        top_confidence = 85
+        distribution.append({"emotion": predicted_emotion, "score": 85})
 
     # Sort distribution descending by score
     distribution.sort(key=lambda item: item["score"], reverse=True)

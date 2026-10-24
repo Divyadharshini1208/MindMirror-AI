@@ -91,6 +91,8 @@ def health_check():
         "status": "healthy" if (text_ok and image_ok) else "degraded",
         "service": "MindMirror AI Engine",
         "models": {
+            "text_model": "ready" if text_ok else "unavailable",
+            "image_model": "ready" if image_ok else "unavailable",
             "nura_text_model": "ready" if text_ok else "unavailable",
             "nura_image_model": "ready" if image_ok else "unavailable",
             "voice_analysis": "ready",
@@ -130,8 +132,8 @@ async def analyze_text_endpoint(req: TextAnalysisRequest):
 @app.post("/api/analyze/image", tags=["Analysis"], summary="Analyze Facial Image Emotion", operation_id="analyze_image_emotion")
 @app.post("/api/analyze-image", include_in_schema=False)
 async def analyze_image_endpoint(
-    file: Optional[UploadFile] = File(None),
-    image: Optional[UploadFile] = File(None),
+    file: Optional[UploadFile] = File(None, description="The facial image file to analyze"),
+    image: Optional[UploadFile] = File(None, description="Alternative field name for compatibility"),
 ):
     """
     Analyzes facial expressions from an uploaded image using the genuine NURA Model-2 inference pipeline.
@@ -145,10 +147,10 @@ async def analyze_image_endpoint(
     allowed_types = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
     if upload.content_type and upload.content_type.lower() not in allowed_types:
         filename = (upload.filename or "").lower()
-        if not (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png")):
+        if not (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png") or filename.endswith(".webp")):
             raise HTTPException(
                 status_code=400,
-                detail="Invalid image format. Please upload a JPG, JPEG, or PNG facial image.",
+                detail="Invalid image format. Please upload a JPG, JPEG, PNG, or WebP facial image.",
             )
 
     try:

@@ -23,9 +23,12 @@ export default function ImageAnalyzer({ onReflectionComplete }) {
   const handleFile = (file) => {
     if (!file) return;
 
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (!validTypes.includes(file.type)) {
-      setError('Please upload a JPG, JPEG, or PNG image.');
+    const name = (file.name || '').toLowerCase();
+    const hasValidExt = name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png') || name.endsWith('.webp');
+    const hasValidMime = file.type?.startsWith('image/') || ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type);
+
+    if (!hasValidExt && !hasValidMime) {
+      setError('Please upload a JPG, JPEG, PNG, or WebP facial image.');
       return;
     }
 
@@ -147,7 +150,7 @@ export default function ImageAnalyzer({ onReflectionComplete }) {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/jpg"
+            accept="image/jpeg,image/png,image/jpg,image/webp"
             style={{ display: 'none' }}
             onChange={(e) => {
               if (e.target.files && e.target.files[0]) {
@@ -204,7 +207,7 @@ export default function ImageAnalyzer({ onReflectionComplete }) {
                 <span style={{ color: '#0284c7', textDecoration: 'underline' }}>browse</span>
               </div>
               <div style={{ fontSize: '0.825rem', color: '#94a3b8' }}>
-                Supports JPG, JPEG, and PNG (up to 10MB)
+                Supports JPG, JPEG, PNG, and WebP (up to 10MB)
               </div>
             </div>
           ) : (

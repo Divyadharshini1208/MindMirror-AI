@@ -167,8 +167,7 @@ export async function analyzeImage(file) {
 
   try {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('image', file);
+    formData.append('file', file, file.name || 'image.jpg');
 
     // Omit explicit Content-Type header so browser appends the multipart boundary
     const response = await axios.post(IMAGE_API_URL, formData, {
