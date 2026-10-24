@@ -313,7 +313,7 @@ export default function ImageAnalyzer({ onReflectionComplete }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
+                gap: '14px',
                 padding: '16px 20px',
                 borderRadius: '14px',
                 backgroundColor: '#f8fafc',
@@ -325,15 +325,21 @@ export default function ImageAnalyzer({ onReflectionComplete }) {
             >
               <div
                 style={{
-                  width: '20px',
-                  height: '20px',
+                  width: '22px',
+                  height: '22px',
                   borderRadius: '50%',
-                  border: '2px solid #e2e8f0',
+                  border: '2.5px solid #e2e8f0',
                   borderTopColor: '#7dd3fc',
                   animation: 'spin 0.8s linear infinite',
+                  flexShrink: 0,
                 }}
               />
-              <span>MirrorMind is observing the expression...</span>
+              <div>
+                <div>MirrorMind is observing the expression...</div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 400, marginTop: '2px' }}>
+                  If the cloud engine was idle, spin-up may take 20-40 seconds.
+                </div>
+              </div>
             </div>
           ) : (
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

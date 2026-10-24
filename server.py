@@ -80,9 +80,9 @@ class TextAnalysisRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=5000, description="The text input to reflect upon.")
 
 
-@app.get("/")
-@app.get("/health")
-@app.get("/api/health")
+@app.get("/api/health", tags=["Health"], summary="System & Model Health Check", operation_id="get_health_check")
+@app.get("/health", include_in_schema=False)
+@app.get("/", include_in_schema=False)
 def health_check():
     """Health check endpoint reporting API and model readiness."""
     text_ok = load_text_model()
@@ -102,8 +102,8 @@ def health_check():
 # =====================================================================
 # Text Analysis Endpoints
 # =====================================================================
-@app.post("/api/analyze/text")
-@app.post("/api/analyze-text")
+@app.post("/api/analyze/text", tags=["Analysis"], summary="Analyze Text Emotion", operation_id="analyze_text_emotion")
+@app.post("/api/analyze-text", include_in_schema=False)
 async def analyze_text_endpoint(req: TextAnalysisRequest):
     """
     Analyzes written text using the genuine NURA Model-1 inference pipeline.
@@ -127,8 +127,8 @@ async def analyze_text_endpoint(req: TextAnalysisRequest):
 # =====================================================================
 # Image Analysis Endpoints
 # =====================================================================
-@app.post("/api/analyze/image")
-@app.post("/api/analyze-image")
+@app.post("/api/analyze/image", tags=["Analysis"], summary="Analyze Facial Image Emotion", operation_id="analyze_image_emotion")
+@app.post("/api/analyze-image", include_in_schema=False)
 async def analyze_image_endpoint(
     file: Optional[UploadFile] = File(None),
     image: Optional[UploadFile] = File(None),
@@ -174,8 +174,8 @@ async def analyze_image_endpoint(
 # =====================================================================
 # Voice Analysis Endpoints
 # =====================================================================
-@app.post("/api/analyze/voice")
-@app.post("/api/analyze-voice")
+@app.post("/api/analyze/voice", tags=["Analysis"], summary="Analyze Vocal Emotion", operation_id="analyze_voice_emotion")
+@app.post("/api/analyze-voice", include_in_schema=False)
 async def analyze_voice_endpoint(
     file: Optional[UploadFile] = File(None),
     audio: Optional[UploadFile] = File(None),

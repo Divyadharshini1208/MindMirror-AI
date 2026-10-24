@@ -103,13 +103,23 @@ function normalizeResult(data, modality) {
   };
 }
 
+function formatApiError(error) {
+  if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+    return 'The cloud engine is waking up from inactivity (Render free tier). Please wait a few moments and try again.';
+  }
+  if (!error.response && error.request) {
+    return 'Unable to reach the cloud engine. If it was inactive, it may be waking up. Please retry in a few moments.';
+  }
+  return error.response?.data?.detail || UNAVAILABLE_MESSAGE;
+}
+
 /**
  * Check backend service health and model readiness status.
  * @returns {Promise<Object>}
  */
 export async function checkBackendHealth() {
   try {
-    const res = await axios.get(HEALTH_API_URL, { timeout: 8000 });
+    const res = await axios.get(HEALTH_API_URL, { timeout: 20000 });
     return res.data;
   } catch (err) {
     console.warn('Backend health check error:', err);
@@ -133,14 +143,13 @@ export async function analyzeText(text) {
       { text: text.trim() },
       {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 25000,
+        timeout: 60000,
       }
     );
     return normalizeResult(response.data, 'TEXT');
   } catch (error) {
     console.error('MirrorMind Text API Error:', error);
-    const detail = error.response?.data?.detail;
-    throw new Error(detail || UNAVAILABLE_MESSAGE);
+    throw new Error(formatApiError(error));
   }
 }
 
@@ -163,13 +172,12 @@ export async function analyzeImage(file) {
 
     // Omit explicit Content-Type header so browser appends the multipart boundary
     const response = await axios.post(IMAGE_API_URL, formData, {
-      timeout: 30000,
+      timeout: 60000,
     });
     return normalizeResult(response.data, 'IMAGE');
   } catch (error) {
     console.error('MirrorMind Image API Error:', error);
-    const detail = error.response?.data?.detail;
-    throw new Error(detail || UNAVAILABLE_MESSAGE);
+    throw new Error(formatApiError(error));
   }
 }
 
