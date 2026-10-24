@@ -16,7 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { GoogleLogo } from '../components/GoogleButton';
-import axios from 'axios';
+import { checkBackendHealth, TEXT_API_URL, IMAGE_API_URL } from '../services/api';
 
 export default function SettingsPage({ currentUser, onLogout }) {
   const navigate = useNavigate();
@@ -27,15 +27,17 @@ export default function SettingsPage({ currentUser, onLogout }) {
     // Ping backend health
     const checkBackend = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/health', { timeout: 4000 });
-        if (res.data?.status === 'healthy') {
+        const data = await checkBackendHealth();
+        if (data?.status === 'healthy') {
           setModelStatus({
-            text: res.data.models?.text_model ? 'ONLINE' : 'OFFLINE',
-            image: res.data.models?.image_model ? 'ONLINE' : 'OFFLINE',
+            text: (data.models?.nura_text_model === 'ready' || data.models?.text_model) ? 'ONLINE' : 'OFFLINE',
+            image: (data.models?.nura_image_model === 'ready' || data.models?.image_model) ? 'ONLINE' : 'OFFLINE',
           });
+        } else {
+          setModelStatus({ text: 'DEGRADED', image: 'DEGRADED' });
         }
       } catch {
-        setModelStatus({ text: 'ONLINE', image: 'ONLINE' });
+        setModelStatus({ text: 'OFFLINE', image: 'OFFLINE' });
       }
     };
     checkBackend();
@@ -346,7 +348,7 @@ export default function SettingsPage({ currentUser, onLogout }) {
                 <div style={{ fontWeight: 600, color: '#111111', fontSize: '0.95rem' }}>
                   Model-1: NURA Text Analysis (LinearSVC)
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Endpoint: http://localhost:8000/api/analyze/text</div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Endpoint: {TEXT_API_URL}</div>
               </div>
               <span style={statusBadgeStyle(modelStatus.text)}>● {modelStatus.text}</span>
             </div>
@@ -356,7 +358,7 @@ export default function SettingsPage({ currentUser, onLogout }) {
                 <div style={{ fontWeight: 600, color: '#111111', fontSize: '0.95rem' }}>
                   Model-2: NURA Image Analysis (FER-2013 SGDClassifier)
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Endpoint: http://localhost:8000/api/analyze/image</div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Endpoint: {IMAGE_API_URL}</div>
               </div>
               <span style={statusBadgeStyle(modelStatus.image)}>● {modelStatus.image}</span>
             </div>

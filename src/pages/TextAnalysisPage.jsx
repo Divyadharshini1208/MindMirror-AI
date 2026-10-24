@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageSquare, ScanFace, Sparkles, ArrowRight } from 'lucide-react';
+import { MessageSquare, ScanFace, Sparkles, CheckCircle2 } from 'lucide-react';
 import TextAnalyzer from '../components/TextAnalyzer';
+import { saveUserReflection } from '../services/auth';
 
 export default function TextAnalysisPage({ currentUser }) {
+  const [saveNotice, setSaveNotice] = useState(null);
+
+  const handleReflectionComplete = (result) => {
+    if (currentUser?.uid && result) {
+      saveUserReflection(currentUser.uid, result);
+      setSaveNotice('Prediction recorded to your private account history.');
+      setTimeout(() => setSaveNotice(null), 4000);
+    }
+  };
+
   return (
     <div style={{ paddingTop: '48px', paddingBottom: '96px', backgroundColor: '#ffffff', minHeight: '80vh' }}>
       <div className="container-narrow">
@@ -62,8 +73,31 @@ export default function TextAnalysisPage({ currentUser }) {
           </div>
         </div>
 
+        {/* Private History Notification Toast */}
+        {saveNotice && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 18px',
+              borderRadius: '12px',
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              color: '#047857',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              marginBottom: '24px',
+              animation: 'fadeIn 180ms ease',
+            }}
+          >
+            <CheckCircle2 size={16} style={{ flexShrink: 0 }} />
+            <span>{saveNotice}</span>
+          </div>
+        )}
+
         {/* Text Analyzer Component */}
-        <TextAnalyzer />
+        <TextAnalyzer onReflectionComplete={handleReflectionComplete} />
       </div>
     </div>
   );

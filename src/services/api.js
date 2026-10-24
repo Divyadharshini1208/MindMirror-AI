@@ -3,17 +3,47 @@ import axios from 'axios';
 /**
  * MirrorMind AI — Multimodal API Client
  *
- * Dedicated separate model endpoints configured via environment variables.
- * Under strict production rules:
- * - Does NOT hardcode API URLs inside components
- * - Does NOT fabricate predictions or simulate artificial successes
- * - In case of missing endpoint or service failure, cleanly reports:
- *   "This MirrorMind capability is currently unavailable."
+ * Configured for production deployment with Render backend:
+ * - Production base URL: https://mindmirror-ai-at2e.onrender.com
+ * - Configurable via VITE_API_BASE_URL with graceful fallback
+ * - Automatic prevention of accidental localhost calls in production builds
+ * - Proper multipart form handling (lets browser generate boundary)
+ * - Clear error handling with standard fallback message
  */
 
-const TEXT_API_URL = import.meta.env.VITE_TEXT_API_URL?.trim() || 'http://localhost:8000/api/analyze/text';
-const IMAGE_API_URL = import.meta.env.VITE_IMAGE_API_URL?.trim() || 'http://localhost:8000/api/analyze/image';
-const VOICE_API_URL = import.meta.env.VITE_VOICE_API_URL?.trim() || 'http://localhost:8000/api/analyze/voice';
+const DEFAULT_PROD_URL = 'https://mindmirror-ai-at2e.onrender.com';
+
+function getResolvedBaseUrl() {
+  const envBase = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (envBase) {
+    // If in production build and envBase accidentally points to localhost, use production URL
+    if (import.meta.env.PROD && (envBase.includes('localhost') || envBase.includes('127.0.0.1'))) {
+      return DEFAULT_PROD_URL;
+    }
+    return envBase.replace(/\/+$/, '');
+  }
+  return DEFAULT_PROD_URL;
+}
+
+const API_BASE_URL = getResolvedBaseUrl();
+
+function resolveEndpoint(envOverride, path) {
+  if (envOverride?.trim()) {
+    const override = envOverride.trim();
+    if (import.meta.env.PROD && (override.includes('localhost') || override.includes('127.0.0.1'))) {
+      const cleanPath = path.startsWith('/') ? path : `/${path}`;
+      return `${DEFAULT_PROD_URL}${cleanPath}`;
+    }
+    return override;
+  }
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${API_BASE_URL}${cleanPath}`;
+}
+
+export const TEXT_API_URL = resolveEndpoint(import.meta.env.VITE_TEXT_API_URL, '/api/analyze/text');
+export const IMAGE_API_URL = resolveEndpoint(import.meta.env.VITE_IMAGE_API_URL, '/api/analyze/image');
+export const VOICE_API_URL = resolveEndpoint(import.meta.env.VITE_VOICE_API_URL, '/api/analyze/voice');
+export const HEALTH_API_URL = `${API_BASE_URL}/api/health`;
 
 const UNAVAILABLE_MESSAGE = 'This MirrorMind capability is currently unavailable.';
 
@@ -67,11 +97,24 @@ function normalizeResult(data, modality) {
     emotion: emotion.charAt(0).toUpperCase() + emotion.slice(1),
     confidence,
     distribution: distribution.sort((a, b) => b.score - a.score),
-    // Only return bounding boxes if backend actually returns coordinates
     boundingBoxes: Array.isArray(data.bounding_boxes) ? data.bounding_boxes : null,
     modelName: data.model_name || null,
     timestamp: new Date().toISOString(),
   };
+}
+
+/**
+ * Check backend service health and model readiness status.
+ * @returns {Promise<Object>}
+ */
+export async function checkBackendHealth() {
+  try {
+    const res = await axios.get(HEALTH_API_URL, { timeout: 8000 });
+    return res.data;
+  } catch (err) {
+    console.warn('Backend health check error:', err);
+    throw err;
+  }
 }
 
 /**
@@ -90,7 +133,7 @@ export async function analyzeText(text) {
       { text: text.trim() },
       {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 20000,
+        timeout: 25000,
       }
     );
     return normalizeResult(response.data, 'TEXT');
@@ -103,6 +146,8 @@ export async function analyzeText(text) {
 
 /**
  * Analyze facial expressions from an uploaded image file.
+ * NOTE: Does NOT manually set Content-Type header so the browser
+ * automatically computes the boundary for multipart/form-data.
  * @param {File} file
  * @returns {Promise<Object>}
  */
@@ -116,9 +161,9 @@ export async function analyzeImage(file) {
     formData.append('file', file);
     formData.append('image', file);
 
+    // Omit explicit Content-Type header so browser appends the multipart boundary
     const response = await axios.post(IMAGE_API_URL, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 25000,
+      timeout: 30000,
     });
     return normalizeResult(response.data, 'IMAGE');
   } catch (error) {
@@ -144,7 +189,6 @@ export async function analyzeVoice(file) {
     formData.append('audio', file, file.name || 'recording.webm');
 
     const response = await axios.post(VOICE_API_URL, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 30000,
     });
     return normalizeResult(response.data, 'VOICE');
@@ -159,4 +203,9 @@ export default {
   analyzeText,
   analyzeImage,
   analyzeVoice,
+  checkBackendHealth,
+  TEXT_API_URL,
+  IMAGE_API_URL,
+  VOICE_API_URL,
+  API_BASE_URL,
 };

@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ScanFace, MessageSquare, Sparkles, ArrowRight } from 'lucide-react';
+import { ScanFace, MessageSquare, Sparkles, CheckCircle2 } from 'lucide-react';
 import ImageAnalyzer from '../components/ImageAnalyzer';
+import { saveUserReflection } from '../services/auth';
 
 export default function ImageAnalysisPage({ currentUser }) {
+  const [saveNotice, setSaveNotice] = useState(null);
+
+  const handleReflectionComplete = (result) => {
+    if (currentUser?.uid && result) {
+      saveUserReflection(currentUser.uid, result);
+      setSaveNotice('Facial expression prediction recorded to your private account history.');
+      setTimeout(() => setSaveNotice(null), 4000);
+    }
+  };
+
   return (
     <div style={{ paddingTop: '48px', paddingBottom: '96px', backgroundColor: '#ffffff', minHeight: '80vh' }}>
       <div className="container-narrow">
@@ -62,8 +73,31 @@ export default function ImageAnalysisPage({ currentUser }) {
           </div>
         </div>
 
+        {/* Private History Notification Toast */}
+        {saveNotice && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 18px',
+              borderRadius: '12px',
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              color: '#047857',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              marginBottom: '24px',
+              animation: 'fadeIn 180ms ease',
+            }}
+          >
+            <CheckCircle2 size={16} style={{ flexShrink: 0 }} />
+            <span>{saveNotice}</span>
+          </div>
+        )}
+
         {/* Image Analyzer Component */}
-        <ImageAnalyzer />
+        <ImageAnalyzer onReflectionComplete={handleReflectionComplete} />
       </div>
     </div>
   );

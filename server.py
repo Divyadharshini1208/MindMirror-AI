@@ -55,18 +55,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Enable CORS for local Vite development server and other origins
+ALLOWED_ORIGINS = [
+    "https://mindmirrorai-53073.web.app",
+    "https://mindmirrorai-53073.firebaseapp.com",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+# Enable CORS for production Firebase Hosting and local development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "*",
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS", "HEAD"],
     allow_headers=["*"],
 )
 
@@ -75,6 +80,8 @@ class TextAnalysisRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=5000, description="The text input to reflect upon.")
 
 
+@app.get("/")
+@app.get("/health")
 @app.get("/api/health")
 def health_check():
     """Health check endpoint reporting API and model readiness."""
@@ -194,8 +201,10 @@ async def analyze_voice_endpoint(
 
 if __name__ == "__main__":
     import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    host = os.environ.get("HOST", "0.0.0.0")
     print("\n" + "=" * 65)
     print("   MindMirror AI — Unified Backend API Server")
-    print("   Serving on: http://localhost:8000")
+    print(f"   Serving on: http://{host}:{port}")
     print("=" * 65 + "\n")
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=False)
+    uvicorn.run("server:app", host=host, port=port, reload=False)

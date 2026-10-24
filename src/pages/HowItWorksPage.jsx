@@ -268,7 +268,7 @@ export default function HowItWorksPage() {
           >
             <div style={tagBoxStyle}>Client Workspace</div>
             <span>→</span>
-            <div style={tagBoxStyle}>FastAPI Server (:8000)</div>
+            <div style={tagBoxStyle}>FastAPI Cloud Engine</div>
             <span>→</span>
             <div style={tagBoxStyle}>NURA Joblib Models</div>
             <span>→</span>
