@@ -1,0 +1,28 @@
+Category,Metric,Value
+Overall,Accuracy,0.2976
+Overall,Macro Precision,0.2827
+Overall,Macro Recall,0.2738
+Overall,Macro F1-Score,0.2675
+Overall,Weighted F1-Score,0.2965
+Performance,Test Inference Time (s),0.0509
+Class: angry,Precision,0.2128
+Class: angry,Recall,0.142
+Class: angry,F1-Score,0.1703
+Class: disgust,Precision,0.0852
+Class: disgust,Recall,0.1712
+Class: disgust,F1-Score,0.1138
+Class: fear,Precision,0.2011
+Class: fear,Recall,0.2051
+Class: fear,F1-Score,0.2031
+Class: happy,Precision,0.4405
+Class: happy,Recall,0.3777
+Class: happy,F1-Score,0.4067
+Class: neutral,Precision,0.2455
+Class: neutral,Recall,0.4574
+Class: neutral,F1-Score,0.3195
+Class: sad,Precision,0.2409
+Class: sad,Recall,0.1652
+Class: sad,F1-Score,0.196
+Class: surprise,Precision,0.5526
+Class: surprise,Recall,0.3983
+Class: surprise,F1-Score,0.4629

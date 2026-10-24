@@ -1,0 +1,19 @@
+Text Emotion & Sentiment Analysis - Classification Report
+Generated: 2026-10-16 21:12:26
+Selected Best Model: Linear Support Vector Machine
+Total Test Set Records: 20,000
+-----------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+     Sadness     0.9627    0.9611    0.9619      6019
+         Joy     0.9465    0.9501    0.9483      6857
+        Love     0.8747    0.8671    0.8708      1497
+       Anger     0.9401    0.9357    0.9378      2782
+        Fear     0.9070    0.9156    0.9113      2215
+    Surprise     0.8514    0.8365    0.8439       630
+
+    accuracy                         0.9378     20000
+   macro avg     0.9137    0.9110    0.9123     20000
+weighted avg     0.9377    0.9378    0.9378     20000
+
