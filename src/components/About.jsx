@@ -50,7 +50,7 @@ export default function About() {
             }}
           >
             "Human emotion is multidimensional. MirrorMind AI brings different forms of communication
-            together so users can explore emotional signals through language, expression, and voice
+            together so users can explore emotional signals through language and facial expression
             in one unified experience."
           </p>
 

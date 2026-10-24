@@ -1,21 +1,18 @@
 """
-MindMirror AI / MirrorMind AI — Unified Multimodal Backend Server
-=================================================================
+MindMirror AI / MirrorMind AI — Unified Emotion Analysis Backend Server
+========================================================================
 Integrates genuine NURA Text and Image AI Models with FastAPI:
 - Model-1: NURA Text Analysis (TF-IDF + Calibrated Linear SVM)
 - Model-2: NURA Facial Image Analysis (FER-2013 StandardScaler + SGDClassifier)
-- Voice Analysis capability
 
 Endpoints:
   GET  /api/health
   POST /api/analyze/text
   POST /api/analyze/image
-  POST /api/analyze/voice
 
 Aliases preserved for existing frontend compatibility:
   POST /api/analyze-text
   POST /api/analyze-image
-  POST /api/analyze-voice
 """
 
 import os
@@ -50,7 +47,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="MindMirror AI API",
-    description="Multimodal Emotion Analysis Server powered by NURA AI Models",
+    description="Text and Facial Image Emotion Analysis Server powered by NURA AI Models",
     version="2.0.0",
     lifespan=lifespan,
 )
@@ -95,7 +92,6 @@ def health_check():
             "image_model": "ready" if image_ok else "unavailable",
             "nura_text_model": "ready" if text_ok else "unavailable",
             "nura_image_model": "ready" if image_ok else "unavailable",
-            "voice_analysis": "ready",
         },
         "version": "2.0.0",
     }
@@ -173,32 +169,6 @@ async def analyze_image_endpoint(
         raise HTTPException(status_code=500, detail="Internal server error during facial image analysis.")
 
 
-# =====================================================================
-# Voice Analysis Endpoints
-# =====================================================================
-@app.post("/api/analyze/voice", tags=["Analysis"], summary="Analyze Vocal Emotion", operation_id="analyze_voice_emotion")
-@app.post("/api/analyze-voice", include_in_schema=False)
-async def analyze_voice_endpoint(
-    file: Optional[UploadFile] = File(None),
-    audio: Optional[UploadFile] = File(None),
-):
-    """
-    Analyzes vocal patterns from audio file or live microphone recording.
-    """
-    upload = file or audio
-    if upload is None:
-        raise HTTPException(status_code=400, detail="No audio file provided.")
-
-    return {
-        "emotion": "Calm",
-        "confidence": 88,
-        "distribution": [
-            {"emotion": "Calm", "score": 88},
-            {"emotion": "Neutral", "score": 7},
-            {"emotion": "Joy", "score": 5},
-        ],
-        "modality": "VOICE",
-    }
 
 
 if __name__ == "__main__":

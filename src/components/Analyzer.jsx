@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { MessageSquare, ScanFace, AudioWaveform, Lock, ArrowRight } from 'lucide-react';
+import { MessageSquare, ScanFace, Lock, ArrowRight } from 'lucide-react';
 import TextAnalyzer from './TextAnalyzer';
 import ImageAnalyzer from './ImageAnalyzer';
-import VoiceAnalyzer from './VoiceAnalyzer';
 import { saveUserReflection } from '../services/auth';
 
 export default function Analyzer({
@@ -49,7 +48,7 @@ export default function Analyzer({
           <p>Choose a signal and let AI interpret the emotional patterns.</p>
         </div>
 
-        {/* Clean Segmented Control: TEXT | IMAGE | VOICE */}
+        {/* Clean Segmented Control: TEXT | IMAGE */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '36px' }}>
           <div
             style={{
@@ -104,28 +103,6 @@ export default function Analyzer({
               <ScanFace size={16} style={{ color: currentTab === 'image' ? '#7dd3fc' : '#64748b' }} />
               <span>IMAGE</span>
             </button>
-
-            <button
-              type="button"
-              onClick={() => handleTabClick('voice')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '11px 24px',
-                borderRadius: '11px',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                transition: 'all 200ms ease',
-                backgroundColor: currentTab === 'voice' ? '#111111' : '#ffffff',
-                color: currentTab === 'voice' ? '#ffffff' : '#111111',
-                border: currentTab === 'voice' ? '1px solid #111111' : '1px solid #e5e7eb',
-                boxShadow: currentTab === 'voice' ? '0 2px 6px rgba(17,17,17,0.1)' : 'none',
-              }}
-            >
-              <AudioWaveform size={16} style={{ color: currentTab === 'voice' ? '#93c5fd' : '#64748b' }} />
-              <span>VOICE</span>
-            </button>
           </div>
         </div>
 
@@ -179,7 +156,7 @@ export default function Analyzer({
                 lineHeight: 1.6,
               }}
             >
-              Multimodal analysis requires an active account to process text, expressions, or voice
+              Multimodal analysis requires an active account to process text or facial expression
               signals through dedicated AI models.
             </p>
 
@@ -201,7 +178,6 @@ export default function Analyzer({
           <div>
             {currentTab === 'text' && <TextAnalyzer />}
             {currentTab === 'image' && <ImageAnalyzer />}
-            {currentTab === 'voice' && <VoiceAnalyzer />}
           </div>
         )}
       </div>

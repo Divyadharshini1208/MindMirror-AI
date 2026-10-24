@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   MessageSquare,
   ScanFace,
-  AudioWaveform,
   Check,
   Copy,
   RotateCcw,
@@ -47,8 +46,6 @@ export default function ResultCard({ result, onReset, onSave }) {
     switch (modality) {
       case 'IMAGE':
         return <ScanFace size={16} style={{ color: '#0284c7' }} />;
-      case 'VOICE':
-        return <AudioWaveform size={16} style={{ color: '#2563eb' }} />;
       case 'TEXT':
       default:
         return <MessageSquare size={16} style={{ color: '#db2777' }} />;

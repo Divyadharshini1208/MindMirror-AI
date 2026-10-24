@@ -42,7 +42,6 @@ function resolveEndpoint(envOverride, path) {
 
 export const TEXT_API_URL = resolveEndpoint(import.meta.env.VITE_TEXT_API_URL, '/api/analyze/text');
 export const IMAGE_API_URL = resolveEndpoint(import.meta.env.VITE_IMAGE_API_URL, '/api/analyze/image');
-export const VOICE_API_URL = resolveEndpoint(import.meta.env.VITE_VOICE_API_URL, '/api/analyze/voice');
 export const HEALTH_API_URL = `${API_BASE_URL}/api/health`;
 
 const UNAVAILABLE_MESSAGE = 'This MirrorMind capability is currently unavailable.';
@@ -180,39 +179,11 @@ export async function analyzeImage(file) {
   }
 }
 
-/**
- * Analyze vocal characteristics and patterns from an audio file.
- * @param {Blob|File} file
- * @returns {Promise<Object>}
- */
-export async function analyzeVoice(file) {
-  if (!file) {
-    throw new Error('Please record or upload audio to analyze.');
-  }
-
-  try {
-    const formData = new FormData();
-    formData.append('file', file, file.name || 'recording.webm');
-    formData.append('audio', file, file.name || 'recording.webm');
-
-    const response = await axios.post(VOICE_API_URL, formData, {
-      timeout: 30000,
-    });
-    return normalizeResult(response.data, 'VOICE');
-  } catch (error) {
-    console.error('MirrorMind Voice API Error:', error);
-    const detail = error.response?.data?.detail;
-    throw new Error(detail || UNAVAILABLE_MESSAGE);
-  }
-}
-
 export default {
   analyzeText,
   analyzeImage,
-  analyzeVoice,
   checkBackendHealth,
   TEXT_API_URL,
   IMAGE_API_URL,
-  VOICE_API_URL,
   API_BASE_URL,
 };

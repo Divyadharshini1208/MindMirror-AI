@@ -6,7 +6,7 @@ export default function PrivacySection() {
     {
       title: 'Private by design',
       description:
-        'Analysis occurs exclusively on signals you deliberately submit in the workspace. The application never engages in passive microphone monitoring or background recording.',
+        'Analysis occurs exclusively on signals you deliberately submit in the workspace. The application never engages in passive camera monitoring or background recording.',
       icon: <Lock size={20} style={{ color: '#111111' }} />,
     },
     {
@@ -18,7 +18,7 @@ export default function PrivacySection() {
     {
       title: 'User-controlled analysis',
       description:
-        'You choose when to analyze and what to submit. Raw images and binary audio are never permanently retained or stored in cloud buckets.',
+        'You choose when to analyze and what to submit. Raw images and text are processed in-memory and never permanently retained in cloud storage.',
       icon: <Sliders size={20} style={{ color: '#0284c7' }} />,
     },
   ];

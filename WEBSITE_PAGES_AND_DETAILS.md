@@ -64,11 +64,11 @@ The welcoming landing page designed with spacious layout, editorial typography, 
    > *"Meet the mirror that understands more than words."*
    *(The word **understands** rendered in soft pink $\rightarrow$ sky-blue gradient text).*
 3. **Interactive Multimodal Synthesis Visual (`Hero.jsx`)**:
-   * Three signal cards (Text, Facial Image contour, Acoustic Waveform) converging into the central MirrorMind AI hub with animated dashed paths.
+   * Two signal cards (Text and Facial Image contour) converging into the central MirrorMind AI hub with animated dashed paths.
    * Real-time interactive pill: `Emotional Signal Detected: Joy & Pride (92%)`.
 4. **The Core Concept Section (`SignalSection.jsx`)**:
    * Headline: `"Emotion isn't expressed in just one way."`
-   * Three columns detailing Words (what you write), Expressions (what your face communicates), and Voice (how you sound).
+   * Two columns detailing Words (what you write) and Expressions (what your face communicates).
 5. **Curated Modality Teasers**:
    * NURA Model-1 card: Highlights lexical polarity with a link to `/features`.
    * NURA Model-2 card: Highlights FER spatial pixel classification with a link to `/features`.
@@ -127,7 +127,7 @@ Covers the brand philosophy, ethical AI charter, privacy principles, and creator
   * Emphasizes the role of context and human agency.
 * **Data Privacy & Security**:
   * Zero photo retention (images processed in-memory and discarded immediately; never stored in cloud buckets).
-  * No passive microphone or camera listening.
+  * No background tracking or passive camera monitoring.
 * **Project Creator Section**:
   * Creator: **Divya Dharshini M.**
   * Clickable contact email: `divyamallayan2007@gmail.com`.

@@ -3,7 +3,6 @@ import {
   ArrowRight,
   MessageSquare,
   ScanFace,
-  AudioWaveform,
   Sparkles,
   ChevronDown,
 } from 'lucide-react';
@@ -92,7 +91,7 @@ export default function Hero({ onStartAnalyzing, onExplore }) {
               margin: '0 auto 36px auto',
             }}
           >
-            MirrorMind AI brings together text, facial expressions, and voice to reveal
+            MirrorMind AI brings together text analysis and facial expression recognition to reveal
             the emotional signals behind human communication.
           </p>
 
@@ -155,10 +154,6 @@ export default function Hero({ onStartAnalyzing, onExplore }) {
             <span style={{ color: '#cbd5e1' }}>•</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               <ScanFace size={13} style={{ color: '#7dd3fc' }} /> Image
-            </span>
-            <span style={{ color: '#cbd5e1' }}>•</span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <AudioWaveform size={13} style={{ color: '#93c5fd' }} /> Voice
             </span>
           </div>
         </div>
@@ -377,91 +372,6 @@ export default function Hero({ onStartAnalyzing, onExplore }) {
                     Micro-expression geometry
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Signal 3: VOICE */}
-            <div
-              onMouseEnter={() => setActiveSignal('voice')}
-              style={{
-                padding: '22px',
-                borderRadius: '16px',
-                border: `1.5px solid ${activeSignal === 'voice' ? '#93c5fd' : '#e5e7eb'}`,
-                backgroundColor: activeSignal === 'voice' ? '#f0f9ff' : '#ffffff',
-                transition: 'all 240ms ease',
-                cursor: 'pointer',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '12px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '8px',
-                      backgroundColor: '#e0f2fe',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#2563eb',
-                    }}
-                  >
-                    <AudioWaveform size={16} />
-                  </div>
-                  <span style={{ fontSize: '0.825rem', fontWeight: 700, letterSpacing: '0.06em' }}>
-                    VOICE
-                  </span>
-                </div>
-                <span
-                  style={{
-                    fontSize: '0.7rem',
-                    fontWeight: 600,
-                    color: '#1d4ed8',
-                    backgroundColor: '#fff',
-                    padding: '2px 8px',
-                    borderRadius: '9999px',
-                    border: '1px solid #bfdbfe',
-                  }}
-                >
-                  Acoustic
-                </span>
-              </div>
-              {/* Smooth dynamic audio waveform bars */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  height: '38px',
-                  padding: '4px 0',
-                }}
-              >
-                {[14, 26, 18, 34, 22, 38, 20, 32, 16, 28, 12, 22, 30, 18, 10].map(
-                  (height, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        flex: 1,
-                        height: `${height}px`,
-                        backgroundColor:
-                          activeSignal === 'voice'
-                            ? idx % 2 === 0
-                              ? '#38bdf8'
-                              : '#f472b6'
-                            : '#cbd5e1',
-                        borderRadius: '3px',
-                        transition: 'all 300ms ease',
-                      }}
-                    />
-                  )
-                )}
               </div>
             </div>
           </div>

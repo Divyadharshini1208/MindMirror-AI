@@ -6,7 +6,7 @@ export default function HowItWorks() {
     {
       number: '01',
       title: 'Choose a signal',
-      description: 'Text, image, or voice.',
+      description: 'Text or image.',
       detail:
         'Select the channel through which you want to communicate. Each modality preserves distinct emotional cues.',
       icon: <Layers size={22} style={{ color: '#db2777' }} />,
@@ -18,7 +18,7 @@ export default function HowItWorks() {
       title: 'MirrorMind analyzes',
       description: 'A dedicated AI model processes the selected input.',
       detail:
-        'Custom neural pipelines extract high-dimensional semantic, spatial, or acoustic features in real time.',
+        'Custom neural pipelines extract high-dimensional semantic and facial spatial features in real time.',
       icon: <Cpu size={22} style={{ color: '#0284c7' }} />,
       accentBg: '#f0f9ff',
       accentBorder: '#bae6fd',

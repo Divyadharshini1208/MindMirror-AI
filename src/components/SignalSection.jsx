@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageSquare, ScanFace, AudioWaveform, ArrowDown } from 'lucide-react';
+import { MessageSquare, ScanFace, ArrowDown } from 'lucide-react';
 import { MirrorMindLogo } from './Navbar';
 
 export default function SignalSection() {
@@ -51,12 +51,12 @@ export default function SignalSection() {
               marginRight: 'auto',
             }}
           >
-            Human feelings reveal themselves across words, subtle expressions, and acoustic cadence.
+            Human feelings reveal themselves across words and subtle facial expressions.
             MirrorMind unifies them into a coherent digital mirror.
           </p>
         </div>
 
-        {/* Three Columns: Words, Expressions, Voice */}
+        {/* Two Columns: Words and Expressions */}
         <div
           style={{
             display: 'grid',
@@ -173,60 +173,6 @@ export default function SignalSection() {
               Micro-expressions, brow activation, and spatial facial contours.
             </p>
           </div>
-
-          {/* Column 3: VOICE */}
-          <div
-            className="surface-card"
-            style={{
-              textAlign: 'center',
-              padding: '36px 28px',
-              borderRadius: '20px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-            }}
-          >
-            <div
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '16px',
-                backgroundColor: '#f0fdf4',
-                border: '1px solid #bbf7d0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#16a34a',
-                margin: '0 auto 20px auto',
-              }}
-            >
-              <AudioWaveform size={24} />
-            </div>
-            <h3
-              style={{
-                fontSize: '1.15rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: '#111111',
-                marginBottom: '8px',
-              }}
-            >
-              VOICE
-            </h3>
-            <p style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 500 }}>
-              How you sound.
-            </p>
-            <p
-              style={{
-                fontSize: '0.85rem',
-                color: '#94a3b8',
-                marginTop: '10px',
-                lineHeight: 1.5,
-              }}
-            >
-              Vocal pitch, energy modulation, acoustic tempo, and timber dynamics.
-            </p>
-          </div>
         </div>
 
         {/* Signature Visual Identity: Visual Connection Flow */}
@@ -277,18 +223,6 @@ export default function SignalSection() {
               }}
             >
               EXPRESSIONS
-            </span>
-            <span style={{ color: '#94a3b8', fontSize: '1.1rem' }}>+</span>
-            <span
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #bbf7d0',
-                color: '#15803d',
-                padding: '6px 14px',
-                borderRadius: '8px',
-              }}
-            >
-              VOICE
             </span>
           </div>
 

@@ -137,6 +137,9 @@ export default function App() {
             <Route path="/dashboard" element={<Navigate to="/text-analysis" replace />} />
             <Route path="/analyze" element={<Navigate to="/text-analysis" replace />} />
             <Route path="/history" element={<Navigate to="/text-analysis" replace />} />
+            <Route path="/voice" element={<Navigate to="/text-analysis" replace />} />
+            <Route path="/voice-analysis" element={<Navigate to="/text-analysis" replace />} />
+            <Route path="/analyze/voice" element={<Navigate to="/text-analysis" replace />} />
 
             {/* Fallback Catch-all: Redirect to /text-analysis if logged in, else / */}
             <Route
